@@ -12,6 +12,7 @@ import { PaymentMethodModule } from './payment_method/payment_method.module';
 import { SubscriptionPlansModule } from './subscription_plans/subscription_plans.module';
 import { SubscriptionModule } from './subscription/subscription.module';
 import { BillingHistoryModule } from './billing_history/billing_history.module';
+import { SearchHistoryModule } from './search_history/search_history.module';
 
 @Module({
     imports: [
@@ -30,7 +31,8 @@ import { BillingHistoryModule } from './billing_history/billing_history.module';
       PaymentMethodModule,
       SubscriptionPlansModule,
       SubscriptionModule,
-      BillingHistoryModule
+      BillingHistoryModule,
+      SearchHistoryModule
     ],
     controllers: [],
     providers: [],

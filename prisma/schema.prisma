@@ -63,9 +63,10 @@ model Profile {
   langugage       Language @relation(fields: [languageId], references: [id])
   user            User     @relation(fields: [userId], references: [id])
 
-  createdAt    DateTime       @default(now())
-  updatedAt    DateTime       @updatedAt
-  Subscription Subscription[]
+  createdAt     DateTime        @default(now())
+  updatedAt     DateTime        @updatedAt
+  Subscription  Subscription[]
+  SerachHistory SerachHistory[]
 
   @@map("profile")
 }
@@ -173,5 +174,17 @@ model BillingHistory {
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
-  @@map("billinghistory")
+  @@map("billing_history")
+}
+
+model SerachHistory {
+  id           Int    @id @default(autoincrement())
+  profileId    Int
+  search_query String
+
+  profile   Profile  @relation(fields: [profileId], references: [id])
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@map("search_history")
 }
