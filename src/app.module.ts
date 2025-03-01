@@ -11,6 +11,7 @@ import { GenresImagesModule } from './genres_images/genres_images.module';
 import { PaymentMethodModule } from './payment_method/payment_method.module';
 import { SubscriptionPlansModule } from './subscription_plans/subscription_plans.module';
 import { SubscriptionModule } from './subscription/subscription.module';
+import { BillingHistoryModule } from './billing_history/billing_history.module';
 
 @Module({
     imports: [
@@ -28,7 +29,8 @@ import { SubscriptionModule } from './subscription/subscription.module';
       GenresImagesModule,
       PaymentMethodModule,
       SubscriptionPlansModule,
-      SubscriptionModule
+      SubscriptionModule,
+      BillingHistoryModule
     ],
     controllers: [],
     providers: [],

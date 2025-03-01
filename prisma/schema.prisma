@@ -27,15 +27,16 @@ model Admin {
 }
 
 model User {
-  id             Int       @id @default(autoincrement())
-  email          String    @unique
+  id             Int              @id @default(autoincrement())
+  email          String           @unique
   age            Int
   gender         String
   hashedPassword String
   hashedToken    String?
-  createdAt      DateTime  @default(now())
-  updatedAt      DateTime  @updatedAt
+  createdAt      DateTime         @default(now())
+  updatedAt      DateTime         @updatedAt
   Profile        Profile[]
+  BillingHistory BillingHistory[]
 
   @@map("user")
 }
@@ -106,8 +107,9 @@ model GenreImages {
 }
 
 model PaymentMethod {
-  id   Int    @id @default(autoincrement())
-  name String
+  id             Int              @id @default(autoincrement())
+  name           String
+  BillingHistory BillingHistory[]
 
   @@map("payment_method")
 }
@@ -143,7 +145,33 @@ model Subscription {
   suvscription_source String
   createdAt           DateTime          @default(now())
   updatedAt           DateTime          @updatedAt
+  BillingHistory      BillingHistory[]
 
   @@map("subscription")
 }
 
+enum BillingHistoryStatus {
+  PENDING
+  ACTIVE
+  INACTIVE
+  BLOCKED
+}
+
+model BillingHistory {
+  id               Int                  @id @default(autoincrement())
+  userId           Int
+  subscriptionId   Int
+  payment_methodId Int
+  amount           Float
+  date             DateTime
+  status           BillingHistoryStatus
+
+  user          User          @relation(fields: [userId], references: [id])
+  subscription  Subscription  @relation(fields: [subscriptionId], references: [id])
+  paymentmethod PaymentMethod @relation(fields: [payment_methodId], references: [id])
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@map("billinghistory")
+}
