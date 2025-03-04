@@ -13,16 +13,19 @@ import { Response } from "express";
 import { User } from "@prisma/client";
 import { CreateAdminDto, AdminSignInDto } from "../admin/dto";
 import { AdminService } from "../admin/admin.service";
+import { ResponseFields, Tokens } from "../common/types";
+import { PrismaService } from "../prisma/prisma.service";
 
 @Injectable()
 export class AuthService {
     constructor(
         private readonly userService: UsersService,
         private readonly adminService: AdminService,
-        private readonly jwtService: JwtService
+        private readonly jwtService: JwtService,
+        private readonly prismaService: PrismaService
     ) {}
 
-    async getTokens(user: User) {
+    async getTokens(user: User): Promise<Tokens> {
         const payload = {
             id: user.id,
             email: user.email,
@@ -62,7 +65,7 @@ export class AuthService {
         return response;
     }
 
-    async signIn(userSignInDto: UserSignInDto, res: Response) {
+    async signIn(userSignInDto: UserSignInDto, res: Response):Promise<ResponseFields> {
         const { email, password } = userSignInDto;
 
         if (!email || !password) {
@@ -98,26 +101,30 @@ export class AuthService {
             httpOnly: true,
         });
         const response = {
-            message: "User logged in",
-            userId: user.id,
+            id: user.id,
             access_token: tokens.access_token,
         };
 
         return response;
     }
 
-    async signOut(refreshToken: string, res: Response) {
-        const userData = await this.jwtService.verify(refreshToken, {
-            secret: process.env.REFRESH_TOKEN_KEY,
+    async signOut(userId : number, res: Response) {
+
+        const user = await this.prismaService.user.updateMany({
+            where: {
+                id: userId,
+                hashedToken: {
+                    not: null,
+                },
+            },
+            data: {
+                hashedToken: null,
+            },
         });
-        if (!userData) {
-            throw new ForbiddenException("User not verified");
+        
+        if(!user){
+            throw new ForbiddenException("Access Deied")
         }
-        const hashed_refresh_token = null;
-        await this.userService.updateRefreshToken(
-            userData.id,
-            hashed_refresh_token
-        );
 
         res.clearCookie("refresh_token");
 
@@ -143,7 +150,7 @@ export class AuthService {
     }
 
 
-    async adminSignIn(adminSignInDto: AdminSignInDto, res: Response) {
+    async adminSignIn(adminSignInDto: AdminSignInDto, res: Response):Promise<ResponseFields> {
         
         const { email, password } = adminSignInDto
 
@@ -180,8 +187,7 @@ export class AuthService {
             httpOnly: true
         })
         const response = {
-            message: "Admin logged in",
-            adminId: admin.id,
+            id: admin.id,
             access_token: tokens.access_token
         };
 
@@ -209,7 +215,7 @@ export class AuthService {
     }
 
 
-    async AdminRefreshToken(id: number, refreshToken: string, res: Response) {
+    async AdminRefreshToken(id: number, refreshToken: string, res: Response):Promise<ResponseFields> {
         const decodedToken = await this.jwtService.decode(refreshToken);
 
         if (id != decodedToken["id"]) {
@@ -241,14 +247,13 @@ export class AuthService {
             httpOnly: true,
         });
         const response = {
-            message: "Admin refreshed",
-            adminId: admin.id,
+            id: admin.id,
             access_token: tokens.access_token,
         };
         return response;
     }
 
-    async refreshToken(id: number, refreshToken: string, res: Response) {
+    async refreshToken(id: number, refreshToken: string, res: Response):Promise<ResponseFields> {
         const decodedToken = await this.jwtService.decode(refreshToken);
         
         if (id != decodedToken["id"]) {
@@ -280,8 +285,7 @@ export class AuthService {
             httpOnly: true,
         });
         const response = {
-            message: "User refreshed",
-            user: user.id,
+            id: user.id,
             access_token: tokens.access_token,
         };
         return response;
