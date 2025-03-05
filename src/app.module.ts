@@ -18,6 +18,7 @@ import { WatchHistoryModule } from './watch_history/watch_history.module';
 import { EpisodeAudioModule } from './episode_audio/episode_audio.module';
 import { SeriesModule } from './series/series.module';
 import { SeasonModule } from './season/season.module';
+import { EpisodeModule } from './episode/episode.module';
 
 @Module({
     imports: [
@@ -42,7 +43,8 @@ import { SeasonModule } from './season/season.module';
       WatchHistoryModule,
       EpisodeAudioModule,
       SeriesModule,
-      SeasonModule
+      SeasonModule,
+      EpisodeModule
     ],
     controllers: [],
     providers: [],
