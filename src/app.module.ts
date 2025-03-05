@@ -15,6 +15,7 @@ import { BillingHistoryModule } from './billing_history/billing_history.module';
 import { SearchHistoryModule } from './search_history/search_history.module';
 import { ContentGenresModule } from './content_genres/content_genres.module';
 import { WatchHistoryModule } from './watch_history/watch_history.module';
+import { EpisodeAudioModule } from './episode_audio/episode_audio.module';
 
 @Module({
     imports: [
@@ -36,7 +37,8 @@ import { WatchHistoryModule } from './watch_history/watch_history.module';
       BillingHistoryModule,
       SearchHistoryModule,
       ContentGenresModule,
-      WatchHistoryModule
+      WatchHistoryModule,
+      EpisodeAudioModule
     ],
     controllers: [],
     providers: [],
