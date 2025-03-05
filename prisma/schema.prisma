@@ -37,6 +37,7 @@ model User {
   updatedAt      DateTime         @updatedAt
   Profile        Profile[]
   BillingHistory BillingHistory[]
+  Devices        Devices[]
 
   @@map("user")
 }
@@ -67,30 +68,34 @@ model Profile {
   updatedAt     DateTime        @updatedAt
   Subscription  Subscription[]
   SerachHistory SerachHistory[]
+  Ratings       Ratings[]
+  WatchHistory  WatchHistory[]
 
   @@map("profile")
 }
 
 model Category {
-  id                Int        @id @default(autoincrement())
+  id                Int               @id @default(autoincrement())
   name              String
   description       String
   parent_categoryId Int
-  parent_category   Category   @relation("CategoryToParent", fields: [parent_categoryId], references: [id])
-  subcategories     Category[] @relation("CategoryToParent")
-  createdAt         DateTime   @default(now())
-  updatedAt         DateTime   @updatedAt
+  parent_category   Category          @relation("CategoryToParent", fields: [parent_categoryId], references: [id])
+  subcategories     Category[]        @relation("CategoryToParent")
+  createdAt         DateTime          @default(now())
+  updatedAt         DateTime          @updatedAt
+  CategoryContent   CategoryContent[]
 
   @@map("category")
 }
 
 model Genres {
-  id          Int           @id @default(autoincrement())
-  name        String
-  description String
-  createdAt   DateTime      @default(now())
-  updatedAt   DateTime      @updatedAt
-  GenreImages GenreImages[]
+  id            Int             @id @default(autoincrement())
+  name          String
+  description   String
+  createdAt     DateTime        @default(now())
+  updatedAt     DateTime        @updatedAt
+  GenreImages   GenreImages[]
+  ContentGenres ContentGenres[]
 
   @@map("genres")
 }
@@ -187,4 +192,133 @@ model SerachHistory {
   updatedAt DateTime @updatedAt
 
   @@map("search_history")
+}
+
+model Devices {
+  id          Int      @id @default(autoincrement())
+  userId      Int
+  device_type String
+  device_name String
+  ip_address  String
+  last_active DateTime
+  User        User     @relation(fields: [userId], references: [id])
+
+  @@map("devices")
+}
+
+model Ratings {
+  id           Int      @id @default(autoincrement())
+  profileId    Int
+  contentId    Int?
+  rating_value Decimal
+  createdAt    DateTime @default(now())
+  Profile      Profile? @relation(fields: [profileId], references: [id])
+  Content      Content? @relation(fields: [contentId], references: [id])
+
+  @@map("ratings")
+}
+
+model Content {
+  id                Int               @id @default(autoincrement())
+  title             String
+  release_year      Int
+  description       String
+  duration          Int
+  trailer_url       String
+  average_rating    Decimal
+  is_available      Boolean
+  country_of_origin String
+  content_type      String
+  Ratings           Ratings[]
+  CategoryContent   CategoryContent[]
+  ContentGenres     ContentGenres[]
+  Series            Series[]
+  WatchHistory      WatchHistory[]
+
+  @@map("content")
+}
+
+model CategoryContent {
+  id         Int      @id @default(autoincrement())
+  Content    Content  @relation(fields: [contentId], references: [id])
+  contentId  Int
+  Category   Category @relation(fields: [categoryId], references: [id])
+  categoryId Int
+
+  @@map("category_content")
+}
+
+model ContentGenres {
+  id        Int      @id @default(autoincrement())
+  Content   Content? @relation(fields: [contentId], references: [id])
+  contentId Int?
+  Genres    Genres?  @relation(fields: [genresId], references: [id])
+  genresId  Int?
+
+  @@map("content_genres")
+}
+
+model WatchHistory {
+  id              Int      @id @default(autoincrement())
+  profileId      Int
+  contentId       Int
+  episodeId       Int?
+  watched_seconds Int
+  last_watched    DateTime
+  is_completed    Boolean
+  content_type    String
+  Episode         Episode? @relation(fields: [episodeId], references: [id])
+  Content         Content  @relation(fields: [contentId], references: [id])
+  Profile         Profile  @relation(fields: [profileId], references: [id])
+
+  @@map("watch_history")
+}
+
+model EpisodeAudio {
+  id             Int      @id @default(autoincrement())
+  audio_track_id Int
+  is_main        Boolean
+  Episode        Episode? @relation(fields: [episodeId], references: [id])
+  episodeId      Int?
+
+  @@map("episode_audio")
+}
+
+model Series {
+  id            Int      @id @default(autoincrement())
+  total_seasons Int
+  created_at    DateTime @default(now())
+  updated_at    DateTime @updatedAt
+  Content       Content? @relation(fields: [contentId], references: [id])
+  contentId     Int?
+  season        Season[]
+
+  @@map("series")
+}
+
+model Season {
+  id             Int       @id @default(autoincrement())
+  title          String
+  seriesId       Int?
+  description    String
+  season_number  Int
+  total_episodes Int
+  release_date   DateTime
+  trailer_url    String
+  episode        Episode[]
+  Series         Series?   @relation(fields: [seriesId], references: [id])
+
+  @@map("season")
+}
+
+model Episode {
+  id             Int            @id @default(autoincrement())
+  duration       Int
+  episode_number Int
+  watchHistory   WatchHistory[]
+  episodeAudio   EpisodeAudio[]
+  Season         Season?        @relation(fields: [seasonId], references: [id])
+  seasonId       Int?
+
+  @@map("episode")
 }

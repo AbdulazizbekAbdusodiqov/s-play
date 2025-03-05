@@ -13,6 +13,8 @@ import { SubscriptionPlansModule } from './subscription_plans/subscription_plans
 import { SubscriptionModule } from './subscription/subscription.module';
 import { BillingHistoryModule } from './billing_history/billing_history.module';
 import { SearchHistoryModule } from './search_history/search_history.module';
+import { ContentGenresModule } from './content_genres/content_genres.module';
+import { WatchHistoryModule } from './watch_history/watch_history.module';
 
 @Module({
     imports: [
@@ -32,7 +34,9 @@ import { SearchHistoryModule } from './search_history/search_history.module';
       SubscriptionPlansModule,
       SubscriptionModule,
       BillingHistoryModule,
-      SearchHistoryModule
+      SearchHistoryModule,
+      ContentGenresModule,
+      WatchHistoryModule
     ],
     controllers: [],
     providers: [],
